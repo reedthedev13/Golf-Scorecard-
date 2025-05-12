@@ -28,7 +28,7 @@ export const GolfPlace = ({ children }) => {
     localStorage.setItem("golfRounds", JSON.stringify(roundHistory));
   }, [roundHistory]);
 
-  const updateHoleData = (holeIndex, data) => {
+  const updateHole = (holeIndex, data) => {
     setCurrentRound((prev) => ({
       ...prev,
       holes: prev.holes.map((hole, i) =>
@@ -36,4 +36,32 @@ export const GolfPlace = ({ children }) => {
       ),
     }));
   };
+
+  const storeRound = () => {
+    if (currentRound.holes.some((hole) => hole.strokes === 0)) {
+      alert("Please complete all holes before saving");
+      return;
+    }
+    setRoundHistory((prev) => [...prev, currentRound]);
+    setCurrentRound({
+      id: uuidv4(),
+      date: format(new Date(), "yyyy-MM-dd"),
+      course: "",
+      holes: Array(18)
+        .fill()
+        .map((_, i) => ({
+          holeNumber: i + 1,
+          par: 4,
+          strokes: 0,
+        })),
+    });
+  };
+
+  return (
+    <GolfContext.Provider
+      value={{ currentRound, roundHistory, updateHole, saveRound }}
+    >
+      {children}
+    </GolfContext.Provider>
+  );
 };
