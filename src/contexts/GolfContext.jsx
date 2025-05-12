@@ -59,7 +59,7 @@ export const GolfPlace = ({ children }) => {
 
   return (
     <GolfContext.Provider
-      value={{ currentRound, roundHistory, updateHole, saveRound }}
+      value={{ currentRound, roundHistory, updateHole, storeRound }}
     >
       {children}
     </GolfContext.Provider>
