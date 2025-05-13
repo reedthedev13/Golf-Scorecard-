@@ -1,69 +1,54 @@
 import { useContext } from "react";
 import { GolfContext } from "../contexts/GolfContext";
-import { subMilliseconds } from "date-fns";
+import { Link } from "react-router-dom";
 
 const RoundHistory = () => {
   const { roundHistory } = useContext(GolfContext);
 
-  if (roundHistory.length === 0) return null;
-
   return (
-    <div className="mt-8 bg-white p-4 rounded-lg shadow">
-      <h2 className="text-xl font-semibold mb-3">Past Rounds</h2>
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Date
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Course
-                </th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Score
-                </th>
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {roundHistory.map((round) => {
-              const totalStrokes = round.holes.reduce(
-                (sum, hole) => sum + hole.strokes,
-                0
-              );
-              const totalPar = round.holes.reduce(
-                (sum, hole) => sum + hole.par,
-                0
-              );
-              const totalScore = totalStrokes - totalPar;
+    <div className="max-w-6xl mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-6">Your Golf Rounds</h1>
+      <Link
+        to="/"
+        className="mb-4 inline-block bg-golf-green text-white px-4 py-2 rounded hover:bg-green-800"
+      >
+        Back to Scorecard
+      </Link>
 
-              return (
-                <tr key={round.id}>
-                  <td className="px-4 py-2 whitespace-nowrap">{round.date}</td>
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    {round.course || "Unknown"}
-                  </td>
-                  <td
-                    className={`px-4 py-2 whitespace-nowrap font-medium ${
-                      totalScore < 0
-                        ? "text-green-600"
-                        : totalScore > 0
-                        ? "text-red-600"
-                        : "text-blue-600"
-                    }`}
-                  >
-                    {totalScore === 0
-                      ? "E"
-                      : totalScore > 0
-                      ? `+${totalScore}`
-                      : totalScore}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+      {roundHistory.length === 0 ? (
+        <p>No rounds saved yet. Play a round to see it here!</p>
+      ) : (
+        <div className="grid gap-4">
+          {roundHistory.map((round, index) => (
+            <div key={round.id} className="bg-white p-4 rounded-lg shadow">
+              <h2 className="text-xl font-semibold">
+                {round.course || "Unnamed Course"} - {round.date}
+              </h2>
+              <div className="grid grid-cols-3 gap-4 mt-3">
+                <div>
+                  <p className="text-sm text-gray-600">Total Strokes</p>
+                  <p className="text-lg font-bold">
+                    {round.holes.reduce((sum, hole) => sum + hole.strokes, 0)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Total Par</p>
+                  <p className="text-lg font-bold">
+                    {round.holes.reduce((sum, hole) => sum + hole.par, 0)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Score</p>
+                  <p className="text-lg font-bold">
+                    {round.holes.reduce((sum, hole) => sum + hole.strokes, 0) -
+                      round.holes.reduce((sum, hole) => sum + hole.par, 0)}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

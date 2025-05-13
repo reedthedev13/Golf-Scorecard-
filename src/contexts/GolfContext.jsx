@@ -17,11 +17,14 @@ export const GolfPlace = ({ children }) => {
         strokes: 0,
       })),
   }));
+
   const [roundHistory, setRoundHistory] = useState([]);
 
   useEffect(() => {
-    const saved = localStorage.getItem("golfRounds");
-    if (saved) setRoundHistory(JSON.parse(saved));
+    const savedRounds = localStorage.getItem("golfRounds");
+    if (savedRounds) {
+      setRoundHistory(JSON.parse(savedRounds));
+    }
   }, []);
 
   useEffect(() => {
@@ -37,12 +40,19 @@ export const GolfPlace = ({ children }) => {
     }));
   };
 
-  const storeRound = () => {
+  const saveRound = () => {
     if (currentRound.holes.some((hole) => hole.strokes === 0)) {
       alert("Please complete all holes before saving");
       return;
     }
+
+    if (!currentRound.course.trim()) {
+      alert("Please enter a course name");
+      return;
+    }
+
     setRoundHistory((prev) => [...prev, currentRound]);
+
     setCurrentRound({
       id: uuidv4(),
       date: format(new Date(), "yyyy-MM-dd"),
@@ -55,11 +65,19 @@ export const GolfPlace = ({ children }) => {
           strokes: 0,
         })),
     });
+
+    alert("Round saved successfully!");
   };
 
   return (
     <GolfContext.Provider
-      value={{ currentRound, roundHistory, updateHole, storeRound }}
+      value={{
+        currentRound,
+        roundHistory,
+        updateHole,
+        saveRound,
+        setCurrentRound,
+      }}
     >
       {children}
     </GolfContext.Provider>
